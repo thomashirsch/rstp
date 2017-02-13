@@ -1,0 +1,52 @@
+{
+	"name" : "resting_state_pipeline",
+	"tool-version" : "1.0.0",
+	"description" : "Automated FMRI tool to analyse the resting state",
+	"command-line" : "rstp_preprocess_wrapper.sh [INPUTFILE] [OUTDIR] [INPUTPREFIX] [LOGFILE] [OUTPUTFILE]",
+	"docker-image": "gin/rstp",
+    "docker-index": "http://index.docker.io",
+	"schema-version" : "0.2",
+	"inputs" : [{
+		"id" : "infile",
+		"name" : "Input file",
+		"type" : "File",
+		"description" : "Input structural and fonctionnal images tarball (e.g. <file>.tgz with rigid structure)",
+		"optional": false,
+		"command-line-key" : "[INPUTFILE]"
+	},
+    {
+      "id": "outdir",
+      "name": "Output directory",
+      "type": "String",
+      "command-line-key": "[OUTDIR]",
+      "optional": false
+    },
+    {
+      "id": "inputfileprefix",
+      "name": "Input File Prefix",
+      "type": "String",
+      "description" : "the Input File prefix used to compute the name of the results tarball and the log file",  
+      "command-line-key": "[INPUTPREFIX]",
+      "optional": false
+    }
+	],
+  	
+	// This section specifies the set of output files from the tool
+  	"output-files" : [{
+    	"id" : "logfile", // As above, a unique id for the output
+    	"name" : "Log file",
+   		"description" : "The output log file from the example tool",
+    	"path-template" : "[OUTDIR]/[INPUTPREFIX]_log_rstp.txt",
+    	"command-line-key" : "[LOGFILE]",
+    	"optional" : false
+  },{
+    	"id" : "outfile",
+    	"name" : "Output file",    	
+		// Path-template specifies where the output file will be
+    	// Note that it can automatically depend on the input values
+    	"path-template" : "[OUTDIR]/[INPUTPREFIX]_results_rstp.tgz",
+    	"description" : "Output tarball File (e.g. <file>.tgz with rigid structure)",
+    	"optional" : false,
+    	"command-line-key" : "[OUTPUTFILE]"
+  		}]			
+ }
