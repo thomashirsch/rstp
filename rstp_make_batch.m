@@ -72,7 +72,7 @@ xml_info = strcat(flibasedir,'/', nxmlfile);
 
 % first we analyse the XML file defining the dataset
 try
-    xml_parent=xml_info;
+    %xml_parent=xml_info;
     xml_info=xml2struct(xml_info);
 catch exception
     warning(getReport(exception));
@@ -153,12 +153,6 @@ end
 
 % the template
 %matlabbatch{2}.spm.temporal.st.scans{1}(1) = cfg_dep('Realign: Estimate: Realigned Images (Sess 1)', substruct('.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}, '.','val', '{}',{1}), substruct('.','sess', '()',{1}, '.','cfiles'));
-matlabbatch{2}.spm.temporal.st.nslices = 31;
-matlabbatch{2}.spm.temporal.st.tr = 2;
-matlabbatch{2}.spm.temporal.st.ta = 1.93548387096774;
-matlabbatch{2}.spm.temporal.st.so = [1 3 5 7 9 11 13 15 17 19 21 23 25 27 29 31 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30];
-matlabbatch{2}.spm.temporal.st.refslice = 31;
-matlabbatch{2}.spm.temporal.st.prefix = 'a';
 
 % the the dynamics
 try
@@ -306,15 +300,86 @@ cd(wd);
 copyfile('spm_preprocess_template.m','batch2run.m','f')
 
 batchfileid = fopen('batch2run.m','a');
+
+% step 1
 line1step1 =  'matlabbatch{1}.spm.spatial.realign.estimate.data = {  {  ';
 specformat =  '                                                   ''%s,1''\n';
 lastlinestep1 = '                                                 }  } ; ';
-fprintf(batchfileid, '%s ', line1step1);
+fprintf(batchfileid, '%s\n ', line1step1);
 [nrows,ncols] = size(matlabbatch{1}.spm.spatial.realign.estimate.data{1});
 for row = 1:nrows
     fprintf(batchfileid, specformat, matlabbatch{1}.spm.spatial.realign.estimate.data{1}{row,:});
 end
-fprintf(batchfileid, '%s ', lastlinestep1);
+fprintf(batchfileid, '%s\n ', lastlinestep1);
+
+% --------------------------
+% step2 
+
+% nslices
+specformat =  'matlabbatch{2}.spm.temporal.st.nslices =  %d ; \n';
+fprintf(batchfileid, specformat, str2double(xml_info.RS_analysis.mrData.functional.EPIBOLD.parameters.nb_slices.value.Text));
+
+% tr
+specformat =  'matlabbatch{2}.spm.temporal.st.tr =  %d ; \n';
+fprintf(batchfileid, specformat, str2double(xml_info.RS_analysis.mrData.functional.EPIBOLD.parameters.TR.value.Text));
+
+% ta
+specformat =  'matlabbatch{2}.spm.temporal.st.ta =  %2.2f ; \n';
+fprintf(batchfileid, specformat, matlabbatch{2}.spm.temporal.st.tr - matlabbatch{2}.spm.temporal.st.tr/matlabbatch{2}.spm.temporal.st.nslices);
+
+% so
+specformat =  'matlabbatch{2}.spm.temporal.st.so = [ %s ]; \n';
+fprintf(batchfileid, specformat, xml_info.RS_analysis.mrData.functional.EPIBOLD.parameters.sliceTimingVector.value.Text);
+
+% refslice
+specformat =  'matlabbatch{2}.spm.temporal.st.refslice =  %d ; \n';
+fprintf(batchfileid, specformat, matlabbatch{2}.spm.temporal.st.so(ceil(matlabbatch{2}.spm.temporal.st.nslices/2)));
+
+% --------------------------------
+% STEP 3 - here starts the job batch management step 3 coregistration  T2*
+% with the resliced images
+% 
+%------------------------------------------
+try
+    specformat =  'matlabbatch{3}.spm.spatial.coreg.estimate.ref = {''%s''} ; \n';
+    fprintf(batchfileid, specformat, T2star);
+catch exception
+    warning(getReport(exception));
+    error('MATLAB:rstp_make_batch_step3','Failed to set job parameters; The supplied XML may not fit the supplied template and/or this wrapper script.')
+end     
+
+% --------------------------------
+% STEP 4 - here starts the job batch management step 3 coregistration  T2
+% T2*
+% 
+%------------------------------------------
+try
+    specformat =  'matlabbatch{4}.spm.spatial.coreg.estimate.ref =  {''%s''} ; \n';
+    fprintf(batchfileid, specformat, T2);
+    specformat =  'matlabbatch{4}.spm.spatial.coreg.estimate.source =  {''%s''} ; \n';
+    fprintf(batchfileid, specformat, T2star);    
+catch exception
+    warning(getReport(exception));
+    error('MATLAB:rstp_make_batch_step4','Failed to set job parameters; The supplied XML may not fit the supplied template and/or this wrapper script.')
+end     
+
+
+% --------------------------------
+% STEP 5 - here starts the job batch management step 3 coregistration  T1
+% T2
+% 
+%------------------------------------------
+try
+    specformat =  'matlabbatch{5}.spm.spatial.coreg.estimate.ref =  {''%s''} ; \n';
+    fprintf(batchfileid, specformat, T1);
+    specformat =  'matlabbatch{5}.spm.spatial.coreg.estimate.source =  {''%s''} ; \n';
+    fprintf(batchfileid, specformat, T2);    
+catch exception
+    warning(getReport(exception));
+    error('MATLAB:rstp_make_batch_step5','Failed to set job parameters; The supplied XML may not fit the supplied template and/or this wrapper script.')
+end     
+
+% ----------------------------
 fclose(batchfileid);
 %writetable(struct2table('matlabbatch{1}.spm.spatial.realign.estimate.data'),'batchtorun1.mat')
 
