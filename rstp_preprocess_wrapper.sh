@@ -13,9 +13,9 @@ function info {
     echo "[ $D ] INFO: $*"
 }
 
-if [ $# != 2 ]
+if [ $# != 3 ]
 then
-    die "usage: $0 <input_tgz> <output_dir>"
+    die "usage: $0 <input_tgz>  <atlas_dir>  <output_dir>"
 fi
 
 INPUTFILE=$1
@@ -36,6 +36,7 @@ info "TOP is ${TOP}"
 tar zxf ${INPUTFILE} || die "Cannot untargz ${INPUTFILE}!"
 
 info "TOP is ${TOP}"
+export TOP
 
 # List top directory in subject directory. There must be only 1. 
 NSECONDTOP=`ls ${DATAROOT}/${TOP} | wc -l| awk '{print $1}'` || die "Cannot count directories in ${DATAROOT}/${TOP}!"
@@ -53,8 +54,14 @@ info "TROISTOP is ${TROISTOP}"
 
 # Export FLI base directory expected by the matlab script. 
 export FLIBASEDIR=${DATAROOT}/${TOP}/${SECONDTOP}/${TROISTOP}
-
 info "FLIBASEDIR is ${FLIBASEDIR}"
+
+# Export ATLAS base directory expected by the matlab script. 
+export ATLASBASEDIR=${DATAROOT}/${TOP}/${SECONDTOP}/${TROISTOP}/Atlases
+
+info "ATLASBASEDIR is ${ATLASBASEDIR}"
+
+
 
 # find the XML file
 # Search for the XML file of the subject
@@ -67,7 +74,13 @@ XMLFILE=`ls ${FLIBASEDIR}/*.xml` || die "Cannot find xml file in ${FLIBASEDIR}!"
 
 info "XMLFILE is ${XMLFILE}"
 
+cd /opt/spm12
+pwd
+#ls -l
 
+eval   sudo ./run_spm12.sh /opt/mcr/v91 function ${CODEROOT}/rstp.m  ${FLIBASEDIR}   ${ATLASBASEDIR}   ${OUTPUTDIR}
+
+#info "exec   rstp  ${XMLFILE}"  
 
 
 
