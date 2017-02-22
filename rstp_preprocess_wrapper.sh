@@ -2,6 +2,7 @@
 
 # env var for dev machine
 MCRROOT=/homes_unix/hirsch/essai_spm_stand_alone/mcr/v90
+MCRROOTBIS=/homes_unix/hirsch/essai_spm_stand_alone/mcr2016/v91
 SPMSAROOT=/homes_unix/hirsch/essai_spm_stand_alone/spm12
 CODEROOT=/homes_unix/hirsch/_new_pipe/docker_rstp
 DATAROOT=/homes_unix/hirsch/_new_pipe/dataroot
@@ -37,7 +38,7 @@ cd ${DATAROOT}
 pwd
 
 # untar of the inputfile 
-TOP=`tar --exclude '*/*' -tzf ${INPUTFILE}` || die "Cannot get top level directory from ${INPUTFILE}!"
+TOP=`tar --exclude '*/*' --overwrite -tzf ${INPUTFILE}` || die "Cannot get top level directory from ${INPUTFILE}!"
 info "TOP is ${TOP}"
 tar zxf ${INPUTFILE} || die "Cannot untargz ${INPUTFILE}!"
 
@@ -98,13 +99,13 @@ info "1 eval has been sent") &&
 # 2 - send the batch to spm
 (cd ${SPMSAROOT};
 pwd;
-exec ./run_spm12.sh ${MCRROOT} batch ${CODEROOT}/batch2run.m;
+exec ./run_spm12.sh ${MCRROOTBIS} batch ${CODEROOT}/batch2run.m;
 info "2 eval has been sent";)&& 
 
 # 3 - get the results of the batch and make the results tarball
 (cd ${CODEROOT};
 pwd;
-exec ./run_rstp_make_batch.sh ${MCRROOT} function ${CODEROOT}/rstp_make_batch  ${BOLDDIR}   ${OUTPUTDIR};
+exec ./run_rstp_post_batch.sh ${MCRROOT}  ${BOLDDIR}   ${OUTPUTDIR};
 info "3 eval has been sent";)
 
 

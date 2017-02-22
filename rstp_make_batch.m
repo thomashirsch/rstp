@@ -414,7 +414,7 @@ catch exception
     error('MATLAB:rstp_make_batch_step6','Failed to set job parameters; The supplied XML may not fit the supplied template and/or this wrapper script.')
 end 
 
-
+% step 7 8 9 are included in the spm template
 % ----------------------------
 fclose(batchfileid);
 %writetable(struct2table('matlabbatch{1}.spm.spatial.realign.estimate.data'),'batchtorun1.mat')
