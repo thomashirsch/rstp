@@ -24,7 +24,7 @@ try
     % 2- getresults from step 2
     result2 = strsplit(ls('a*.nii'));
     [nrows,ncols] = size(result2);
-    for col = 1:ncols
+    for col = 1:ncols-1
           movefile(result2{col},BOLD_dest);
     end
     

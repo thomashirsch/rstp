@@ -1,4 +1,4 @@
-function [matlabbatch]=rstp_make_batch(flibasedir,atlasdir,outputdir)
+function [matlabbatch]=rstp_make_batch(flibasedir,atlasdir)
 % This function enables setting some parameters for the SPM12 preprocessing
 % batch and running the SPM job.
 %   xmlxml_info = path to XML file specifying the role of each file, and some
@@ -378,6 +378,42 @@ catch exception
     warning(getReport(exception));
     error('MATLAB:rstp_make_batch_step5','Failed to set job parameters; The supplied XML may not fit the supplied template and/or this wrapper script.')
 end     
+
+% --------------------------------
+% STEP 6 - here starts the job batch management step 6 segmentation with
+% the atlas
+% 
+%------------------------------------------
+
+% first we get the atlas - no as it will be in a fixed path relatively to
+% datarootdir
+
+
+% the template and the dynamics
+try
+    specformat =  'matlabbatch{6}.spm.spatial.preproc.channel.vols =  {''%s''} ; \n';
+    fprintf(batchfileid, specformat, T1);
+    
+    atlasfile = fullfile(atlasdir,'TPM.nii');
+    specformat =  'matlabbatch{6}.spm.spatial.preproc.tissue(1).tpm =  {''%s,1''} ; \n';
+    fprintf(batchfileid, specformat, atlasfile);
+    specformat =  'matlabbatch{6}.spm.spatial.preproc.tissue(2).tpm =  {''%s,2''} ; \n';
+    fprintf(batchfileid, specformat, atlasfile);
+    specformat =  'matlabbatch{6}.spm.spatial.preproc.tissue(3).tpm =  {''%s,3''} ; \n';
+    fprintf(batchfileid, specformat, atlasfile);
+    specformat =  'matlabbatch{6}.spm.spatial.preproc.tissue(4).tpm =  {''%s,4''} ; \n';
+    fprintf(batchfileid, specformat, atlasfile);
+    specformat =  'matlabbatch{6}.spm.spatial.preproc.tissue(5).tpm =  {''%s,5''} ; \n';
+    fprintf(batchfileid, specformat, atlasfile);
+    specformat =  'matlabbatch{6}.spm.spatial.preproc.tissue(6).tpm =  {''%s,6''} ; \n';
+    fprintf(batchfileid, specformat, atlasfile);
+    
+    
+catch exception
+    warning(getReport(exception));
+    error('MATLAB:rstp_make_batch_step6','Failed to set job parameters; The supplied XML may not fit the supplied template and/or this wrapper script.')
+end 
+
 
 % ----------------------------
 fclose(batchfileid);

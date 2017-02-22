@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# env var for dev machine
+MCRROOT=/homes_unix/hirsch/essai_spm_stand_alone/mcr/v90
+SPMSAROOT=/homes_unix/hirsch/essai_spm_stand_alone/spm12
+CODEROOT=/homes_unix/hirsch/_new_pipe/docker_rstp
+DATAROOT=/homes_unix/hirsch/_new_pipe/dataroot
+
 info "Start running RSTP wrapper"
 
 function die {
@@ -13,9 +19,9 @@ function info {
     echo "[ $D ] INFO: $*"
 }
 
-if [ $# != 3 ]
+if [ $# != 2 ]
 then
-    die "usage: $0 <input_tgz>  <atlas_dir>  <output_dir>"
+    die "usage: $0 <input_tgz>  <output_dir>"
 fi
 
 INPUTFILE=$1
@@ -71,16 +77,36 @@ then
     die "Found 0 or more than 1 xml file in ${FLIBASEDIR}!"
 fi
 XMLFILE=`ls ${FLIBASEDIR}/*.xml` || die "Cannot find xml file in ${FLIBASEDIR}!"
-
 info "XMLFILE is ${XMLFILE}"
+BOLDDIR=${FLIBASEDIR}/EPIBOLD
+info "BOLDDIR is ${BOLDDIR}"
 
-cd /opt/spm12
-pwd
+
+#cd /opt/spm12
 #ls -l
 
-eval   sudo ./run_spm12.sh /opt/mcr/v91 function ${CODEROOT}/rstp.m  ${FLIBASEDIR}   ${ATLASBASEDIR}   ${OUTPUTDIR}
 
-#info "exec   rstp  ${XMLFILE}"  
+
+# cmds for dev machine
+# 1 - make the batch 2 run with spm12 in standalone
+(cd ${CODEROOT};
+pwd;
+exec   ./run_rstp_make_batch.sh ${MCRROOT}  ${FLIBASEDIR}   ${ATLASBASEDIR};
+info "1 eval has been sent") &&
+
+
+# 2 - send the batch to spm
+(cd ${SPMSAROOT};
+pwd;
+exec ./run_spm12.sh ${MCRROOT} batch ${CODEROOT}/batch2run.m;
+info "2 eval has been sent";)&& 
+
+# 3 - get the results of the batch and make the results tarball
+(cd ${CODEROOT};
+pwd;
+exec ./run_rstp_make_batch.sh ${MCRROOT} function ${CODEROOT}/rstp_make_batch  ${BOLDDIR}   ${OUTPUTDIR};
+info "3 eval has been sent";)
+
 
 
 
