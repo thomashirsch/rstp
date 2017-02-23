@@ -1,11 +1,18 @@
 #!/bin/bash
 
 # env var for dev machine
+#MCRROOT=/homes_unix/hirsch/essai_spm_stand_alone/mcr/v90
+#MCRROOTBIS=/homes_unix/hirsch/essai_spm_stand_alone/mcr2016/v91
+#SPMSAROOT=/homes_unix/hirsch/essai_spm_stand_alone/spm12
+#CODEROOT=/homes_unix/hirsch/_new_pipe/docker_rstp
+#DATAROOT=/homes_unix/hirsch/_new_pipe/dataroot
+
+# env var for dev machine
 MCRROOT=/homes_unix/hirsch/essai_spm_stand_alone/mcr/v90
-MCRROOTBIS=/homes_unix/hirsch/essai_spm_stand_alone/mcr2016/v91
-SPMSAROOT=/homes_unix/hirsch/essai_spm_stand_alone/spm12
-CODEROOT=/homes_unix/hirsch/_new_pipe/docker_rstp
-DATAROOT=/homes_unix/hirsch/_new_pipe/dataroot
+MCRROOTBIS=/opt/mcr/v91
+SPMSAROOT=/opt/spm/spm12
+CODEROOT=/rstp_code
+DATAROOT=/rstp_data
 
 info "Start running RSTP wrapper"
 
@@ -92,7 +99,7 @@ info "BOLDDIR is ${BOLDDIR}"
 # 1 - make the batch 2 run with spm12 in standalone
 (cd ${CODEROOT};
 pwd;
-exec   ./run_rstp_make_batch.sh ${MCRROOT}  ${FLIBASEDIR}   ${ATLASBASEDIR};
+#exec   ./run_rstp_make_batch.sh ${MCRROOT}  ${FLIBASEDIR}   ${ATLASBASEDIR};
 info "1 eval has been sent") &&
 
 
@@ -105,7 +112,7 @@ info "2 eval has been sent";)&&
 # 3 - get the results of the batch and make the results tarball
 (cd ${CODEROOT};
 pwd;
-exec ./run_rstp_post_batch.sh ${MCRROOT}  ${BOLDDIR}   ${OUTPUTDIR};
+#exec ./run_rstp_post_batch.sh ${MCRROOT}  ${BOLDDIR}   ${OUTPUTDIR};
 info "3 eval has been sent";)
 
 

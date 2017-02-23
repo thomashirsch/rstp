@@ -1,10 +1,12 @@
 # at beginning FROM mcr2015b
-# FROM docker_spm12
-FROM spmcentral/spm
+# to test spm in standalone FROM dspm12
+# then with the 2 mcr
+FROM dspm12mcr2
+
 
 RUN echo "--- START   ----------"
 
-# on monte un volume /rstp_data pour récupérer détarer le dataset et unn autre pour mettre le code
+# on monte un volume /rstp_data pour récupérer détarer le dataset et un autre pour mettre le code
 
 VOLUME /rstp_data
 
@@ -17,11 +19,16 @@ ENV CODEROOT=/rstp_code
 COPY ./rstp_preprocess_wrapper.sh  /rstp_code/rstp_preprocess_wrapper.sh
 RUN   /bin/chmod 777  /rstp_code/rstp_preprocess_wrapper.sh
 
-# on varecuperer le .m on doit recuperer l executable MSAE de rstp
-COPY ./rstp.m  /rstp_code/rstp.m
-#RUN   /bin/chmod 777  /rstp_code/rstp
+# on va recuperer les executables MSAE de rstp_make batch et post batch. et les lanceurs bash
 
-# audessus c l erreur il faut compiler avec spm12 standalone et la mcr
+COPY ./rstp_make_batch  /rstp_code/rstp_make_batch
+COPY ./rstp_post_batch  /rstp_code/rstp_post_batch
+
+COPY ./run_rstp_make_batch.sh  /rstp_code/run_rstp_make_batch.sh
+COPY ./run_rstp_post_batch.sh  /rstp_code/run_rstp_post_batch.sh
+
+# on recupere aussi le template de batch
+COPY ./spm_preprocess_template.m /rstp_code/spm_preprocess_template.m
 
 
 ENTRYPOINT ["/bin/bash"]
