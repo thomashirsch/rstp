@@ -8,7 +8,7 @@
 #DATAROOT=/homes_unix/hirsch/_new_pipe/dataroot
 
 # env var for dev machine
-MCRROOT=/homes_unix/hirsch/essai_spm_stand_alone/mcr/v90
+MCRROOT=/opt/mcrbis/v90
 MCRROOTBIS=/opt/mcr/v91
 SPMSAROOT=/opt/spm/spm12
 CODEROOT=/rstp_code
@@ -99,7 +99,7 @@ info "BOLDDIR is ${BOLDDIR}"
 # 1 - make the batch 2 run with spm12 in standalone
 (cd ${CODEROOT};
 pwd;
-#exec   ./run_rstp_make_batch.sh ${MCRROOT}  ${FLIBASEDIR}   ${ATLASBASEDIR};
+exec   ./run_rstp_make_batch.sh ${MCRROOT}  ${FLIBASEDIR}   ${ATLASBASEDIR};
 info "1 eval has been sent") &&
 
 
@@ -112,7 +112,7 @@ info "2 eval has been sent";)&&
 # 3 - get the results of the batch and make the results tarball
 (cd ${CODEROOT};
 pwd;
-#exec ./run_rstp_post_batch.sh ${MCRROOT}  ${BOLDDIR}   ${OUTPUTDIR};
+exec ./run_rstp_post_batch.sh ${MCRROOT}  ${BOLDDIR}   ${OUTPUTDIR};
 info "3 eval has been sent";)
 
 
