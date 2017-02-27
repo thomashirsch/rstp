@@ -16,7 +16,6 @@ function [matlabbatch]=rstp_make_batch(flibasedir,atlasdir)
 % written at that location.
 %
 %  TH janvier 2017 - GIN UMR5296
-
 %flibasedir = getenv('FLIBASEDIR');
 
 
@@ -53,8 +52,8 @@ function [matlabbatch]=rstp_make_batch(flibasedir,atlasdir)
 
 wd=pwd
 
-diary(fullfile('rstp_make_batch.log'));
-echo on;
+diary('rstp_make_batch.log');
+
 
 cd(flibasedir);
 % wd=pwd;
@@ -459,7 +458,7 @@ fclose(batchfileid);
 % % then move the result files to results_dir
 % movefile(fullfile(fileparts(char(BOLD(1))),[matlabbatch{1}.spm.spatial.realign.estimate.prefix,'a*']),results_dir);
 
-echo off
+diary off
 % spm('fmri');
 % just to use atlasdir and outputdir
 % cd(atlasdir)

@@ -1,6 +1,7 @@
 # at beginning FROM mcr2015b
 # to test spm in standalone FROM dspm12
 # then with the 2 mcr
+
 FROM dspm12mcr2
 
 

@@ -1,18 +1,18 @@
 #!/bin/bash
 
 # env var for dev machine
-#MCRROOT=/homes_unix/hirsch/essai_spm_stand_alone/mcr/v90
-#MCRROOTBIS=/homes_unix/hirsch/essai_spm_stand_alone/mcr2016/v91
-#SPMSAROOT=/homes_unix/hirsch/essai_spm_stand_alone/spm12
-#CODEROOT=/homes_unix/hirsch/_new_pipe/docker_rstp
-#DATAROOT=/homes_unix/hirsch/_new_pipe/dataroot
+MCRROOT=/homes_unix/hirsch/essai_spm_stand_alone/mcr/v90
+MCRROOTBIS=/homes_unix/hirsch/essai_spm_stand_alone/mcr2016/v91
+SPMSAROOT=/homes_unix/hirsch/essai_spm_stand_alone/spm12
+CODEROOT=/homes_unix/hirsch/_new_pipe/docker_rstp
+DATAROOT=/homes_unix/hirsch/_new_pipe/dataroot
 
-# env var for dev machine
-MCRROOT=/opt/mcrbis/v90
-MCRROOTBIS=/opt/mcr/v91
-SPMSAROOT=/opt/spm/spm12
-CODEROOT=/rstp_code
-DATAROOT=/rstp_data
+# env var for docker machines, for VIP
+#MCRROOT=/opt/mcrbis/v90
+#MCRROOTBIS=/opt/mcr/v91
+#SPMSAROOT=/opt/spm/spm12
+#CODEROOT=/rstp_code
+#DATAROOT=/rstp_data
 
 info "Start running RSTP wrapper"
 
@@ -86,9 +86,18 @@ then
 fi
 XMLFILE=`ls ${FLIBASEDIR}/*.xml` || die "Cannot find xml file in ${FLIBASEDIR}!"
 info "XMLFILE is ${XMLFILE}"
+
 BOLDDIR=${FLIBASEDIR}/EPIBOLD
 info "BOLDDIR is ${BOLDDIR}"
 
+T1DIR=${FLIBASEDIR}/T1
+info "T1DIR is ${T1DIR}"
+
+T2DIR=${FLIBASEDIR}/T2
+info "T2DIR is ${T2DIR}"
+
+T2starDIR=${FLIBASEDIR}/T2star
+info "T2starDIR is ${T2DIRstar}"
 
 #cd /opt/spm12
 #ls -l
@@ -110,12 +119,20 @@ exec ./run_spm12.sh ${MCRROOTBIS} batch ${CODEROOT}/batch2run.m;
 info "2 eval has been sent";)&& 
 
 # 3 - get the results of the batch and make the results tarball
-(cd ${CODEROOT};
-pwd;
-exec ./run_rstp_post_batch.sh ${MCRROOT}  ${BOLDDIR}   ${OUTPUTDIR};
-info "3 eval has been sent";)
+(cd ${DATAROOT};
+ mkdir results;
+ RESULTSDIR=${DATAROOT}/results;
+ info "RESULTSDIR is ${RESULTSDIR}"
+ cd ${CODEROOT};
+ pwd;
+ exec ./run_rstp_post_batch.sh ${MCRROOT}  ${BOLDDIR} ${T1DIR} ${T2DIR} ${T2starDIR}  ${RESULTSDIR};
+ info "3 eval has been sent: we get the results";)&&
 
-
-
+# 4 - create a tarball from the results then give it to VIP by the outputdir argument
+( cd  ${OUTPUTDIR} 
+  # and copy the logs file to the outputdir
+  cp ${CODEROOT}/*.log .
+tar -cvz   ${RESULTSDIR}
+info "4 eval has been sent: we get the results in a tarball; we give the tarball to VIP";)
 
 info "End running RSTP wrapper"
