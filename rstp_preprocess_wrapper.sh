@@ -97,11 +97,17 @@ T2DIR=${FLIBASEDIR}/T2
 info "T2DIR is ${T2DIR}"
 
 T2starDIR=${FLIBASEDIR}/T2star
-info "T2starDIR is ${T2DIRstar}"
+info "T2starDIR is ${T2starDIR}"
 
 #cd /opt/spm12
 #ls -l
 
+# preparation of the results
+cd ${DATAROOT};
+mkdir results;
+RESULTSDIR=${DATAROOT}/results;
+info "RESULTSDIR is ${RESULTSDIR}"
+export RESULTSDIR;
 
 
 # cmds for dev machine
@@ -118,21 +124,24 @@ pwd;
 exec ./run_spm12.sh ${MCRROOTBIS} batch ${CODEROOT}/batch2run.m;
 info "2 eval has been sent";)&& 
 
-# 3 - get the results of the batch and make the results tarball
-(cd ${DATAROOT};
- mkdir results;
- RESULTSDIR=${DATAROOT}/results;
- info "RESULTSDIR is ${RESULTSDIR}"
+# 3 - get the results of the batch 
+(
+ info "RESULTSDIR is ${RESULTSDIR}";
  cd ${CODEROOT};
  pwd;
  exec ./run_rstp_post_batch.sh ${MCRROOT}  ${BOLDDIR} ${T1DIR} ${T2DIR} ${T2starDIR}  ${RESULTSDIR};
  info "3 eval has been sent: we get the results";)&&
 
 # 4 - create a tarball from the results then give it to VIP by the outputdir argument
-( cd  ${OUTPUTDIR} 
+( info "RESULTSDIR is ${RESULTSDIR}";
+  cd  ${RESULTSDIR}; 
+  pwd;
+  ls ;
   # and copy the logs file to the outputdir
-  cp ${CODEROOT}/*.log .
-tar -cvz   ${RESULTSDIR}
-info "4 eval has been sent: we get the results in a tarball; we give the tarball to VIP";)
+  cp ${CODEROOT}/*.log ${OUTPUTDIR};
+  info  "we are sending the tar fct for the following repository"
+  
+  tar czf ${OUTPUTDIR}/data_results.tar.gz   ${RESULTSDIR} ;
+  info "4 eval has been sent: we get the results in a tarball; we give the tarball to VIP";)
 
 info "End running RSTP wrapper"

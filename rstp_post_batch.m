@@ -44,9 +44,11 @@ try
     
 catch exception
     warning(getReport(exception));
-    error('MATLAB:rstp_post_batch','Can''t move results to destination directories...')
     diary off;
+    error('MATLAB:rstp_post_batch','Can''t move results to destination directories...')
+    
 end
+
 rstp_result = 0;
 diary off;
 return 

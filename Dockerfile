@@ -2,7 +2,7 @@
 # to test spm in standalone FROM dspm12
 # then with the 2 mcr
 
-FROM dspm12mcr2
+FROM thomashirsch/dspm12mcr2
 
 
 RUN echo "--- START   ----------"
