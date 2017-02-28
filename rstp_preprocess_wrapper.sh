@@ -1,18 +1,18 @@
 #!/bin/bash
 
 # env var for dev machine
-MCRROOT=/homes_unix/hirsch/essai_spm_stand_alone/mcr/v90
-MCRROOTBIS=/homes_unix/hirsch/essai_spm_stand_alone/mcr2016/v91
-SPMSAROOT=/homes_unix/hirsch/essai_spm_stand_alone/spm12
-CODEROOT=/homes_unix/hirsch/_new_pipe/docker_rstp
-DATAROOT=/homes_unix/hirsch/_new_pipe/dataroot
+#MCRROOT=/homes_unix/hirsch/essai_spm_stand_alone/mcr/v90
+#MCRROOTBIS=/homes_unix/hirsch/essai_spm_stand_alone/mcr2016/v91
+#SPMSAROOT=/homes_unix/hirsch/essai_spm_stand_alone/spm12
+#CODEROOT=/homes_unix/hirsch/_new_pipe/docker_rstp
+#DATAROOT=/homes_unix/hirsch/_new_pipe/dataroot
 
 # env var for docker machines, for VIP
-#MCRROOT=/opt/mcrbis/v90
-#MCRROOTBIS=/opt/mcr/v91
-#SPMSAROOT=/opt/spm/spm12
-#CODEROOT=/rstp_code
-#DATAROOT=/rstp_data
+MCRROOT=/opt/mcrbis/v90
+MCRROOTBIS=/opt/mcr/v91
+SPMSAROOT=/opt/spm/spm12
+CODEROOT=/rstp_code
+DATAROOT=/rstp_data
 
 info "Start running RSTP wrapper"
 
@@ -23,7 +23,7 @@ function die {
 }
 
 function info {
-    loc=`date`
+    local D=`date`
     echo "[ $D ] INFO: $*"
 }
 
@@ -110,7 +110,7 @@ info "RESULTSDIR is ${RESULTSDIR}"
 export RESULTSDIR;
 
 
-# cmds for dev machine
+
 # 1 - make the batch 2 run with spm12 in standalone
 (cd ${CODEROOT};
 pwd;
@@ -138,10 +138,11 @@ info "2 eval has been sent";)&&
   pwd;
   ls ;
   # and copy the logs file to the outputdir
+  ls -l ${CODEROOT}/*.log
   cp ${CODEROOT}/*.log ${OUTPUTDIR};
   info  "we are sending the tar fct for the following repository"
   
   tar czf ${OUTPUTDIR}/data_results.tar.gz   ${RESULTSDIR} ;
-  info "4 eval has been sent: we get the results in a tarball; we give the tarball to VIP";)
+  info "4 eval has been sent we get the results in a tarball we give the tarball to VIP";)
 
 info "End running RSTP wrapper"
